@@ -4,11 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haptic Feedback Sender</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Haptic Feedback Sender</h1>
-    <input type="number" id="vibrationCount" placeholder="Enter a number">
-    <button onclick="sendVibration()">Send</button>
+<body class="bg-gradient-to-r from-green-100 to-green-300 min-h-screen flex flex-col items-center justify-center text-gray-800 p-6">
+    <div class="bg-white shadow-xl rounded-lg p-6 w-11/12 max-w-md">
+        <h1 class="text-3xl font-extrabold mb-4 text-center">Haptic Feedback Sender</h1>
+        <p class="text-center text-gray-600 mb-6">
+            Enter the number of vibrations to send to the device.
+        </p>
+        <input
+            type="number"
+            id="vibrationCount"
+            class="w-full p-4 border rounded-lg border-gray-300 mb-4"
+            placeholder="Enter a number"
+        />
+        <button
+            onclick="sendVibration()"
+            class="w-full py-3 bg-green-500 text-white font-bold rounded-lg shadow-lg hover:bg-green-600 hover:scale-105 transition-transform"
+        >
+            Send Vibration
+        </button>
+    </div>
 
     <script>
         const socket = new WebSocket("wss://76cf-202-140-34-158.ngrok-free.app"); // Use your ngrok URL
