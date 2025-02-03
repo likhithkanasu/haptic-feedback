@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Vibration</title>
+</head>
+<body>
+    <h2>Waiting for vibration...</h2>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8080"); // Replace with your server IP
+
+        socket.onmessage = function(event) {
+            console.log("Received:", event.data); // Debugging log
+
+            let vibrationCount = parseInt(event.data);
+            if (!isNaN(vibrationCount) && vibrationCount > 0) {
+                console.log(`Vibrating ${vibrationCount} times`);
+
+                // Create vibration pattern
+                let pattern = Array(vibrationCount).fill(300).join(","); // Vibrate multiple times
+                navigator.vibrate(pattern);
+            } else {
+                console.log("Invalid vibration count received");
+            }
+        };
+
+        socket.onopen = () => console.log("Connected to WebSocket server");
+        socket.onclose = () => console.log("Disconnected from WebSocket server");
+    </script>
+</body>
+</html>
