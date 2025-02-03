@@ -3,40 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Vibration</title>
+    <title>Haptic Feedback Receiver</title>
 </head>
 <body>
-    <h2>Waiting for vibration...</h2>
-    <button id="startButton">Start</button>
+    <h1>Haptic Feedback Receiver</h1>
+    <button id="activateVibration">Activate Vibration</button>
+    <p id="status">Waiting for vibration signal...</p>
 
     <script>
-        const socket = new WebSocket("https://76cf-202-140-34-158.ngrok-free.app "); // Replace with your laptop's IP
-        let vibrationTriggered = false;
+        let vibrationAllowed = false;
 
-        // Wait for user interaction (button click or any other action)
-        document.getElementById("startButton").addEventListener("click", function() {
-            vibrationTriggered = true;  // Mark that the user has interacted
-            console.log("User tapped, ready to vibrate!");
+        // User must interact first to allow vibration
+        document.getElementById("activateVibration").addEventListener("click", () => {
+            vibrationAllowed = true;
+            document.getElementById("status").innerText = "Ready to receive vibration!";
         });
 
-        socket.onmessage = function(event) {
-            console.log("Received message:", event.data); // Log the received message
-            let vibrationCount = parseInt(event.data);
+        const socket = new WebSocket("wss://76cf-202-140-34-158.ngrok-free.app"); // Use your ngrok URL
 
-            // Check if the data is a valid number
-            if (vibrationTriggered && !isNaN(vibrationCount) && vibrationCount > 0) {
-                console.log(`Vibrating ${vibrationCount} times`);
-
-                // Generate a vibration pattern for multiple vibrations
-                let pattern = Array(vibrationCount).fill(300);  // Each vibration lasts 300ms
-                navigator.vibrate(pattern);  // Vibrates the mobile device
-            } else {
-                console.log("Invalid or empty vibration count received, or no user interaction yet.");
-            }
+        socket.onopen = () => {
+            console.log("Connected to WebSocket Server");
         };
 
-        socket.onopen = () => console.log("Connected to WebSocket server");
-        socket.onclose = () => console.log("Disconnected from WebSocket server");
+        socket.onmessage = (event) => {
+            if (vibrationAllowed) {
+                const count = parseInt(event.data, 10);
+                console.log(`Received: ${count}`);
+                navigator.vibrate(Array(count).fill(300)); // Vibrate in bursts
+                document.getElementById("status").innerText = `Vibrating ${count} times!`;
+            } else {
+                console.warn("Vibration blocked! User must activate first.");
+            }
+        };
     </script>
 </body>
 </html>
