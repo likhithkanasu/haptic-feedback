@@ -27,10 +27,16 @@
 
         socket.onmessage = (event) => {
             if (vibrationAllowed) {
-                const count = parseInt(event.data, 10);
-                console.log(`Received: ${count}`);
-                navigator.vibrate(Array(count).fill(300)); // Vibrate in bursts
-                document.getElementById("status").innerText = `Vibrating ${count} times!`;
+                let count = parseInt(event.data.trim(), 10); // Ensure proper number conversion
+
+                if (!isNaN(count) && count > 0) {
+                    console.log(`Received: ${count}`);
+                    navigator.vibrate(Array(count).fill(300)); // Vibrate in bursts
+                    document.getElementById("status").innerText = `Vibrating ${count} times!`;
+                } else {
+                    console.warn("Invalid data received:", event.data);
+                    document.getElementById("status").innerText = "Error: Invalid vibration signal!";
+                }
             } else {
                 console.warn("Vibration blocked! User must activate first.");
             }
