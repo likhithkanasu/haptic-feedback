@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haptic Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Mobile Vibration Receiver</h1>
-    <p id="status">Waiting for vibration signal...</p>
-    <button onclick="activateVibration()">Activate Vibration</button>
+<body class="bg-gradient-to-r from-indigo-100 to-indigo-300 min-h-screen flex flex-col items-center justify-center text-gray-800 p-4">
+    <div class="bg-white shadow-xl rounded-lg p-6 w-full max-w-sm">
+        <h1 class="text-3xl font-extrabold text-center mb-4">Mobile Vibration Receiver</h1>
+        <p id="status" class="text-center text-gray-600 mb-4">Waiting for vibration signal...</p>
+        <button
+            onclick="activateVibration()"
+            class="w-full py-3 bg-indigo-500 text-white font-bold rounded-lg shadow-lg hover:bg-indigo-600 hover:scale-105 transition-transform"
+        >
+            Activate Vibration
+        </button>
+    </div>
 
     <script>
         let vibrationAllowed = false; // User must tap to activate vibration
