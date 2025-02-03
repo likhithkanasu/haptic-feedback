@@ -3,20 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibration Controller</title>
+    <title>Haptic Feedback Sender</title>
 </head>
 <body>
-    <h2>Enter a Number to Vibrate Mobile</h2>
-    <input type="number" id="vibrateInput" placeholder="Enter times">
+    <h1>Haptic Feedback Sender</h1>
+    <input type="number" id="vibrationCount" placeholder="Enter a number">
     <button onclick="sendVibration()">Send</button>
 
     <script>
-        const socket = new WebSocket("https://76cf-202-140-34-158.ngrok-free.app"); // Replace with server IP
+        const socket = new WebSocket("wss://76cf-202-140-34-158.ngrok-free.app"); // Use your ngrok URL
+
+        socket.onopen = () => {
+            console.log("Connected to WebSocket Server");
+        };
 
         function sendVibration() {
-            let times = document.getElementById("vibrateInput").value;
-            if (times > 0) {
-                socket.send(times); // Send the number to the server
+            const count = document.getElementById("vibrationCount").value;
+            if (count > 0) {
+                socket.send(count);
+                console.log(`Sent: ${count}`);
             } else {
                 alert("Enter a valid number!");
             }
