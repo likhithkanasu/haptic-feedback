@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Vibration</title>
+</head>
+<body>
+    <h2>Waiting for Vibration Signal...</h2>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8080"); // Replace with server IP
+
+        socket.onmessage = (event) => {
+            let times = parseInt(event.data);
+            if (!isNaN(times) && navigator.vibrate) {
+                let pattern = Array(times).fill(300).concat(0); // Vibrate pattern
+                navigator.vibrate(pattern);
+            }
+        };
+    </script>
+</body>
+</html>
