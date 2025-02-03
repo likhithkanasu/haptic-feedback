@@ -3,45 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haptic Feedback Receiver</title>
+    <title>Haptic Feedback</title>
 </head>
 <body>
-    <h1>Haptic Feedback Receiver</h1>
-    <button id="activateVibration">Activate Vibration</button>
+    <h1>Mobile Vibration Receiver</h1>
     <p id="status">Waiting for vibration signal...</p>
+    <button onclick="activateVibration()">Activate Vibration</button>
 
     <script>
-        let vibrationAllowed = false;
+        let vibrationAllowed = false; // User must tap to activate vibration
 
-        // User must tap this button to allow vibration
-        document.getElementById("activateVibration").addEventListener("click", () => {
+        function activateVibration() {
             vibrationAllowed = true;
-            document.getElementById("status").innerText = "Ready to receive vibration!";
-        });
+            document.getElementById("status").innerText = "Vibration enabled. Waiting for signal...";
+        }
 
-        const socket = new WebSocket("wss://76cf-202-140-34-158.ngrok-free.app"); // Use your ngrok URL
+        const socket = new WebSocket("wss://76cf-202-140-34-158.ngrok-free.app");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket Server");
         };
 
         socket.onmessage = (event) => {
-            if (vibrationAllowed) {
-                // Ensure event.data is a string before trimming
-                let data = typeof event.data === "string" ? event.data.trim() : String(event.data).trim();
-                let count = parseInt(data, 10); // Convert string to number safely
-
-                if (!isNaN(count) && count > 0) {
-                    console.log(`Received: ${count}`);
-                    navigator.vibrate(Array(count).fill(300)); // Vibrate in bursts
-                    document.getElementById("status").innerText = `Vibrating ${count} times!`;
-                } else {
-                    console.warn("Invalid data received:", event.data);
-                    document.getElementById("status").innerText = "Error: Invalid vibration signal!";
-                }
-            } else {
-                console.warn("Vibration blocked! User must activate first.");
+            if (!vibrationAllowed) {
+                console.warn("Vibration blocked! User must tap first.");
+                return;
             }
+
+            if (event.data instanceof Blob) {
+                event.data.text().then((text) => {
+                    processVibrationData(text);
+                }).catch((error) => {
+                    console.error("Error reading Blob:", error);
+                });
+            } else {
+                processVibrationData(event.data);
+            }
+        };
+
+        function processVibrationData(data) {
+            let trimmedData = data.trim();
+            let count = parseInt(trimmedData, 10);
+
+            if (!isNaN(count) && count > 0) {
+                console.log(`Received: ${count}`);
+                navigator.vibrate(Array(count).fill(300)); // Vibrate in bursts
+                document.getElementById("status").innerText = `Vibrating ${count} times!`;
+            } else {
+                console.warn("Invalid data received:", data);
+                document.getElementById("status").innerText = "Error: Invalid vibration signal!";
+            }
+        }
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        socket.onclose = () => {
+            console.warn("WebSocket connection closed.");
         };
     </script>
 </body>
