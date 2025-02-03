@@ -13,7 +13,7 @@
     <script>
         let vibrationAllowed = false;
 
-        // User must interact first to allow vibration
+        // User must tap this button to allow vibration
         document.getElementById("activateVibration").addEventListener("click", () => {
             vibrationAllowed = true;
             document.getElementById("status").innerText = "Ready to receive vibration!";
@@ -27,7 +27,9 @@
 
         socket.onmessage = (event) => {
             if (vibrationAllowed) {
-                let count = parseInt(event.data.trim(), 10); // Ensure proper number conversion
+                // Ensure event.data is a string before trimming
+                let data = typeof event.data === "string" ? event.data.trim() : String(event.data).trim();
+                let count = parseInt(data, 10); // Convert string to number safely
 
                 if (!isNaN(count) && count > 0) {
                     console.log(`Received: ${count}`);
